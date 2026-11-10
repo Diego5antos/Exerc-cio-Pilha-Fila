@@ -1,0 +1,64 @@
+
+const readline = require("readline");
+
+const CAP = 5;
+const romaneio = [];   
+const caminhao = [];   
+
+function incluirPacote(codigo) {
+  if (romaneio.length === CAP) { console.log("Romaneio cheio (maximo 5 pacotes)."); return; }
+  if (codigo === "") { console.log("Codigo invalido."); return; }
+  romaneio.push(codigo);
+  console.log(`Pacote ${codigo} incluido no romaneio.`);
+}
+
+function carregar() {
+  if (romaneio.length === 0) { console.log("Romaneio vazio: nao ha pacote para carregar."); return; }
+  if (caminhao.length === CAP) { console.log("Caminhao cheio: pacote permanece na fila."); return; }
+  const pacote = romaneio.shift();   
+  caminhao.push(pacote);            
+  console.log(`Pacote ${pacote} carregado no caminhao.`);
+}
+
+function retirarDoCaminhao() {
+  if (caminhao.length === 0) { console.log("Caminhao vazio: nao ha pacote para retirar."); return; }
+  console.log(`Pacote ${caminhao.pop()} retirado do caminhao.`);
+}
+
+function mostrar() {
+  console.log("Romaneio (frente -> fim): " + (romaneio.length ? romaneio.join(" -> ") : "vazio"));
+  console.log("Caminhao (base -> topo):  " + (caminhao.length ? caminhao.join(" -> ") : "vazio"));
+}
+
+function menu() {
+  console.log("\n===== MENU =====");
+  console.log("1 - Incluir pacote no romaneio");
+  console.log("2 - Retirar da fila e carregar");
+  console.log("3 - Retirar pacote do caminhao");
+  console.log("4 - Mostrar romaneio e caminhao");
+  console.log("0 - Encerrar");
+  process.stdout.write("Opcao: ");
+}
+
+const rl = readline.createInterface({ input: process.stdin });
+let esperandoCodigo = false;
+
+rl.on("line", (linha) => {
+  const entrada = linha.trim();
+  if (esperandoCodigo) {
+    esperandoCodigo = false;
+    incluirPacote(entrada.toUpperCase());
+    return menu();
+  }
+  switch (entrada) {
+    case "1": esperandoCodigo = true; process.stdout.write("Codigo do pacote (ex.: P01): "); return;
+    case "2": carregar(); break;
+    case "3": retirarDoCaminhao(); break;
+    case "4": mostrar(); break;
+    case "0": console.log("Encerrando."); rl.close(); return;
+    default: console.log("Opcao invalida.");
+  }
+  menu();
+});
+
+menu();
